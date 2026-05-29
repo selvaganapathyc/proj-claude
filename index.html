@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Atrium · People Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f5f1e8;
+    --paper-2:#efe9dc;
+    --card:#fbf9f3;
+    --ink:#211e1a;
+    --ink-soft:#5a544a;
+    --ink-faint:#938b7c;
+    --line:#ddd5c4;
+    --line-soft:#e8e1d2;
+    --clay:#c0492f;
+    --clay-deep:#9c3621;
+    --sage:#6b7755;
+    --sage-soft:#e4e7d8;
+    --gold:#c69214;
+    --shadow:0 1px 2px rgba(33,30,26,.04), 0 8px 24px -12px rgba(33,30,26,.18);
+    --shadow-lg:0 2px 4px rgba(33,30,26,.05), 0 24px 60px -24px rgba(33,30,26,.32);
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    font-family:'Archivo',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    min-height:100vh;
+    background-image:
+      radial-gradient(circle at 12% -5%, rgba(192,73,47,.06), transparent 38%),
+      radial-gradient(circle at 100% 0%, rgba(107,119,85,.07), transparent 40%);
+    background-attachment:fixed;
+  }
+  ::selection{background:var(--clay);color:var(--paper)}
+  .serif{font-family:'Fraunces',serif}
+
+  /* ---------- Layout shell ---------- */
+  .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  aside{
+    border-right:1px solid var(--line);
+    padding:30px 18px;
+    display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;
+    background:linear-gradient(180deg, rgba(251,249,243,.5), transparent);
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:0 8px 26px;margin-bottom:8px;border-bottom:1px solid var(--line-soft)}
+  .brand .mark{
+    width:38px;height:38px;border-radius:11px;flex:none;
+    background:var(--ink);color:var(--paper);
+    display:grid;place-items:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:21px;
+    box-shadow:var(--shadow);
+  }
+  .brand h1{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1}
+  .brand small{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px;font-weight:600}
+  nav{display:flex;flex-direction:column;gap:3px;margin-top:22px}
+  .navlbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:0 12px;margin:14px 0 6px}
+  .navitem{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;border-radius:10px;cursor:pointer;
+    color:var(--ink-soft);font-weight:500;font-size:14.5px;
+    border:1px solid transparent;transition:all .16s ease;
+    text-align:left;width:100%;background:none;font-family:inherit;
+  }
+  .navitem:hover{background:var(--paper-2);color:var(--ink)}
+  .navitem.active{background:var(--card);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow);font-weight:600}
+  .navitem .ic{width:18px;height:18px;flex:none;opacity:.8}
+  .navitem.active .ic{opacity:1}
+  .navitem .count{margin-left:auto;font-size:11.5px;background:var(--paper-2);color:var(--ink-soft);padding:1px 8px;border-radius:20px;font-weight:600}
+  .navitem.active .count{background:var(--clay);color:var(--paper)}
+  .aside-foot{margin-top:auto;padding:14px 12px 0;border-top:1px solid var(--line-soft)}
+  .aside-foot .who{display:flex;align-items:center;gap:10px}
+  .who .av{width:34px;height:34px;border-radius:50%;background:var(--sage);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  .who b{font-size:13.5px;display:block;line-height:1.2}
+  .who span{font-size:11.5px;color:var(--ink-faint)}
+
+  /* ---------- Main ---------- */
+  main{padding:34px 44px 70px;max-width:1180px}
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:30px;flex-wrap:wrap}
+  .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);font-weight:700;margin-bottom:8px}
+  .topbar h2{font-family:'Fraunces',serif;font-size:38px;font-weight:550;letter-spacing:-.02em;line-height:1.02}
+  .topbar p{color:var(--ink-soft);margin-top:8px;font-size:15px;max-width:52ch}
+
+  .btn{
+    font-family:'Archivo',sans-serif;font-weight:600;font-size:14px;
+    padding:11px 18px;border-radius:11px;border:1px solid var(--ink);
+    background:var(--ink);color:var(--paper);cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;transition:all .16s ease;
+    box-shadow:var(--shadow);white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn.ghost:hover{border-color:var(--ink)}
+  .btn.sm{padding:7px 13px;font-size:13px;border-radius:9px}
+  .btn.danger{background:var(--clay);border-color:var(--clay)}
+  .btn .ic{width:16px;height:16px}
+
+  /* ---------- Stat cards ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:34px}
+  .stat{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;position:relative;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .stat::after{content:'';position:absolute;right:-26px;top:-26px;width:80px;height:80px;border-radius:50%;background:var(--accent,var(--clay));opacity:.08}
+  .stat .lbl{font-size:12px;letter-spacing:.04em;color:var(--ink-faint);font-weight:600;text-transform:uppercase}
+  .stat .num{font-family:'Fraunces',serif;font-size:42px;font-weight:600;letter-spacing:-.02em;line-height:1;margin:10px 0 4px}
+  .stat .sub{font-size:12.5px;color:var(--ink-soft)}
+  .stat .sub b{color:var(--sage);font-weight:700}
+  .stat .sub b.warn{color:var(--clay)}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+  .search{position:relative;flex:1;min-width:220px;max-width:380px}
+  .search input{
+    width:100%;font-family:inherit;font-size:14px;color:var(--ink);
+    padding:11px 14px 11px 40px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);outline:none;transition:border .16s;
+  }
+  .search input:focus{border-color:var(--ink)}
+  .search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--ink-faint)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{
+    font-family:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:20px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink-soft);cursor:pointer;transition:all .14s;
+  }
+  .chip:hover{border-color:var(--ink-soft);color:var(--ink)}
+  .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* ---------- Employee grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .emp{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px;box-shadow:var(--shadow);transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
+    position:relative;cursor:pointer;
+  }
+  .emp:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--ink-faint)}
+  .emp .row1{display:flex;gap:14px;align-items:center}
+  .emp .av{width:50px;height:50px;border-radius:13px;flex:none;display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff;font-family:'Fraunces',serif}
+  .emp h3{font-size:16.5px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+  .emp .role{font-size:13px;color:var(--ink-soft);margin-top:2px}
+  .emp .meta{margin-top:16px;padding-top:15px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:7px}
+  .emp .meta div{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft)}
+  .emp .meta .ic{width:15px;height:15px;flex:none;color:var(--ink-faint)}
+  .dept-tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;letter-spacing:.02em}
+  .dept-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+  .emp .stat-dot{position:absolute;top:18px;right:18px}
+  .pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.03em}
+  .pill.active{background:var(--sage-soft);color:var(--sage)}
+  .pill.leave{background:#f3e2c7;color:#9a6a12}
+  .pill.remote{background:#dfe7ee;color:#3d6080}
+
+  /* ---------- Table (leave) ---------- */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--paper-2)}
+  td{padding:15px 20px;border-bottom:1px solid var(--line-soft);font-size:14px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .12s}
+  tbody tr:hover{background:var(--paper-2)}
+  .td-person{display:flex;align-items:center;gap:11px}
+  .td-person .av{width:34px;height:34px;border-radius:9px;font-size:13px;color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+  .td-person b{font-size:14px;font-weight:600}
+  .td-person span{font-size:12px;color:var(--ink-faint);display:block}
+  .lt{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px}
+  .lt .d{width:9px;height:9px;border-radius:3px}
+  .status{font-size:12px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-block}
+  .status.pending{background:#f3e2c7;color:#9a6a12}
+  .status.approved{background:var(--sage-soft);color:var(--sage)}
+  .status.denied{background:#f1d9d3;color:var(--clay-deep)}
+  .actions-cell{display:flex;gap:7px}
+  .iconbtn{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center;transition:all .14s;color:var(--ink-soft)}
+  .iconbtn:hover{border-color:var(--ink);color:var(--ink)}
+  .iconbtn.ok:hover{background:var(--sage);border-color:var(--sage);color:#fff}
+  .iconbtn.no:hover{background:var(--clay);border-color:var(--clay);color:#fff}
+  .iconbtn .ic{width:16px;height:16px}
+
+  /* ---------- Departments ---------- */
+  .dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+  .deptcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .deptcard .bar{position:absolute;left:0;top:0;bottom:0;width:5px}
+  .deptcard h3{font-family:'Fraunces',serif;font-size:21px;font-weight:600;letter-spacing:-.01em}
+  .deptcard .lead{font-size:13px;color:var(--ink-soft);margin-top:4px}
+  .deptcard .nums{display:flex;gap:24px;margin-top:18px}
+  .deptcard .nums div span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600}
+  .deptcard .nums div b{font-family:'Fraunces',serif;font-size:26px;font-weight:600;display:block;line-height:1.1}
+  .avstack{display:flex;margin-top:18px}
+  .avstack .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--card);margin-left:-8px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff}
+  .avstack .av:first-child{margin-left:0}
+  .avstack .more{width:30px;height:30px;border-radius:50%;border:2px solid var(--card);margin-left:-8px;background:var(--paper-2);color:var(--ink-soft);display:grid;place-items:center;font-size:11px;font-weight:700}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--ink-faint)}
+  .empty .ic{width:46px;height:46px;margin-bottom:14px;opacity:.5}
+  .empty p{font-size:15px}
+
+  /* ---------- Modal ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(33,30,26,.42);backdrop-filter:blur(3px);display:grid;place-items:center;padding:24px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:18px;width:min(540px,100%);max-height:90vh;overflow:auto;box-shadow:var(--shadow-lg);transform:translateY(12px) scale(.98);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+  .scrim.open .modal{transform:none}
+  .modal-head{padding:24px 28px 18px;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:flex-start}
+  .modal-head h3{font-family:'Fraunces',serif;font-size:25px;font-weight:600;letter-spacing:-.01em}
+  .modal-head p{font-size:13.5px;color:var(--ink-soft);margin-top:3px}
+  .modal-body{padding:24px 28px}
+  .field{margin-bottom:17px}
+  .field label{display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px}
+  .field input,.field select,.field textarea{
+    width:100%;font-family:inherit;font-size:14.5px;color:var(--ink);
+    padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);outline:none;transition:border .15s;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink);background:var(--card)}
+  .field textarea{resize:vertical;min-height:74px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .modal-foot{padding:18px 28px 26px;display:flex;gap:12px;justify-content:flex-end;border-top:1px solid var(--line-soft)}
+  .x{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--paper);cursor:pointer;display:grid;place-items:center;color:var(--ink-soft);transition:all .14s}
+  .x:hover{border-color:var(--ink);color:var(--ink)}
+
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:13px 22px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);z-index:60;opacity:0;transition:all .26s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;gap:10px;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .dot{width:8px;height:8px;border-radius:50%;background:var(--sage)}
+
+  .view{animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .grid > *{animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+
+  /* drawer for employee detail */
+  .drawer-list{display:flex;flex-direction:column;gap:0}
+  .drawer-list .li{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line-soft);font-size:14px}
+  .drawer-list .li:last-child{border-bottom:none}
+  .drawer-list .li span{color:var(--ink-faint);font-weight:500}
+  .drawer-list .li b{font-weight:600}
+  .det-head{display:flex;gap:18px;align-items:center;margin-bottom:6px}
+  .det-head .av{width:64px;height:64px;border-radius:16px;font-size:26px}
+
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    aside{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--line)}
+    .brand{border:none;padding-bottom:0;margin:0}
+    nav{flex-direction:row;flex-wrap:wrap;margin:0 0 0 auto}
+    .navlbl,.aside-foot{display:none}
+    main{padding:24px 20px 60px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .field-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="mark serif">A</div>
+      <div>
+        <h1>Atrium</h1>
+        <small>People Ops</small>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="aside-foot">
+      <div class="who">
+        <div class="av">SC</div>
+        <div>
+          <b>Selva C.</b>
+          <span>HR Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main"></main>
+</div>
+
+<div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"><span class="dot"></span><span id="toastmsg"></span></div>
+
+<script>
+/* ============================ ICONS ============================ */
+const I = {
+  grid:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  layers:'<path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  edit:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  trash:'<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  cake:'<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8M4 16s1.5-2 4-2 4 2 4 2 1.5-2 4-2 4 2 4 2M2 21h20M7 8v3M12 8v3M17 8v3"/><circle cx="7" cy="5" r="1"/><circle cx="12" cy="4" r="1"/><circle cx="17" cy="5" r="1"/>',
+  brief:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+};
+const icon = (name,cls='ic')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[name]}</svg>`;
+
+/* ============================ DATA ============================ */
+const DEPTS = [
+  {id:'eng',  name:'Engineering', color:'#c0492f', lead:'Priya Raman'},
+  {id:'des',  name:'Design',      color:'#6b7755', lead:'Maya Chen'},
+  {id:'sal',  name:'Sales',       color:'#c69214', lead:'Diego Alvarez'},
+  {id:'ops',  name:'Operations',  color:'#3d6080', lead:'Selva C.'},
+  {id:'mkt',  name:'Marketing',   color:'#8a5a83', lead:'Hannah Okafor'},
+];
+const seed = [
+  {id:1, name:'Priya Raman',   role:'VP of Engineering', dept:'eng', email:'priya@atrium.co',  phone:'+1 415 555 0142', loc:'San Francisco', start:'2019-03-11', status:'active', salary:215000, type:'Full-time'},
+  {id:2, name:'Maya Chen',     role:'Head of Design',    dept:'des', email:'maya@atrium.co',   phone:'+1 415 555 0188', loc:'San Francisco', start:'2020-06-01', status:'active', salary:182000, type:'Full-time'},
+  {id:3, name:'Diego Alvarez', role:'Sales Director',    dept:'sal', email:'diego@atrium.co',  phone:'+1 312 555 0119', loc:'Chicago',       start:'2018-09-23', status:'active', salary:168000, type:'Full-time'},
+  {id:4, name:'Hannah Okafor', role:'Marketing Lead',    dept:'mkt', email:'hannah@atrium.co', phone:'+44 20 7946 001', loc:'London',        start:'2021-01-18', status:'remote', salary:134000, type:'Full-time'},
+  {id:5, name:'Theo Lindqvist',role:'Senior Engineer',   dept:'eng', email:'theo@atrium.co',   phone:'+46 8 555 0177',  loc:'Stockholm',     start:'2021-08-30', status:'remote', salary:148000, type:'Full-time'},
+  {id:6, name:'Aisha Bello',   role:'Product Designer',  dept:'des', email:'aisha@atrium.co',  phone:'+1 646 555 0133', loc:'New York',      start:'2022-02-14', status:'active', salary:121000, type:'Full-time'},
+  {id:7, name:'Marco Rossi',   role:'Account Executive', dept:'sal', email:'marco@atrium.co',  phone:'+39 06 555 0150', loc:'Rome',          start:'2022-11-07', status:'leave',  salary:98000,  type:'Full-time'},
+  {id:8, name:'Lena Vogt',     role:'Ops Coordinator',   dept:'ops', email:'lena@atrium.co',   phone:'+49 30 555 0166', loc:'Berlin',        start:'2023-04-03', status:'active', salary:86000,  type:'Full-time'},
+  {id:9, name:'Sam Whitfield', role:'Backend Engineer',  dept:'eng', email:'sam@atrium.co',    phone:'+1 415 555 0190', loc:'San Francisco', start:'2023-07-19', status:'active', salary:139000, type:'Full-time'},
+  {id:10,name:'Noor Hadid',    role:'Content Strategist', dept:'mkt', email:'noor@atrium.co',  phone:'+1 213 555 0124', loc:'Los Angeles',   start:'2024-01-22', status:'active', salary:92000,  type:'Contract'},
+];
+const seedLeave = [
+  {id:1, emp:7, type:'Parental', from:'2026-05-01', to:'2026-08-01', days:66, status:'approved', note:'Parental leave — first child.'},
+  {id:2, emp:3, type:'Vacation', from:'2026-06-15', to:'2026-06-26', days:10, status:'pending',  note:'Family trip to Italy.'},
+  {id:3, emp:9, type:'Sick',     from:'2026-05-27', to:'2026-05-29', days:3,  status:'approved', note:'Flu recovery.'},
+  {id:4, emp:6, type:'Vacation', from:'2026-07-04', to:'2026-07-11', days:6,  status:'pending',  note:'Summer break.'},
+  {id:5, emp:5, type:'Personal', from:'2026-06-02', to:'2026-06-03', days:2,  status:'denied',   note:'Overlaps with release week.'},
+];
+const LEAVE_COLORS = {Vacation:'#6b7755', Sick:'#c0492f', Parental:'#8a5a83', Personal:'#3d6080'};
+const AV_COLORS = ['#c0492f','#6b7755','#c69214','#3d6080','#8a5a83','#9c3621','#4a7a6f','#a8632a'];
+
+/* ============================ STATE ============================ */
+let state = load();
+let route = 'dashboard';
+let q = '';
+let deptFilter = 'all';
+
+function load(){
+  try{
+    const raw = localStorage.getItem('atrium.v1');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {employees:seed, leave:seedLeave, nextEmp:11, nextLeave:6};
+}
+function save(){ localStorage.setItem('atrium.v1', JSON.stringify(state)); }
+
+/* ============================ HELPERS ============================ */
+const $ = s => document.querySelector(s);
+const initials = n => n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const avColor = id => AV_COLORS[(id*7)%AV_COLORS.length];
+const dept = id => DEPTS.find(d=>d.id===id) || {name:'—',color:'#999'};
+const fmtMoney = n => '$'+n.toLocaleString();
+const fmtDate = s => new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+function tenure(start){
+  const d = new Date(start+'T00:00:00'), now = new Date('2026-05-29');
+  const months = (now.getFullYear()-d.getFullYear())*12 + (now.getMonth()-d.getMonth());
+  const y = Math.floor(months/12), m = months%12;
+  return (y?y+'y ':'') + m+'mo';
+}
+let toastT;
+function toast(msg){
+  $('#toastmsg').textContent = msg;
+  $('#toast').classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>$('#toast').classList.remove('show'), 2600);
+}
+
+/* ============================ NAV ============================ */
+const NAVS = [
+  {id:'dashboard',   label:'Overview',     icon:'grid'},
+  {id:'employees',   label:'People',       icon:'users'},
+  {id:'leave',       label:'Time Off',     icon:'cal'},
+  {id:'departments', label:'Departments',  icon:'layers'},
+];
+function renderNav(){
+  const pend = state.leave.filter(l=>l.status==='pending').length;
+  $('#nav').innerHTML = `<div class="navlbl">Workspace</div>` + NAVS.map(n=>{
+    let badge = '';
+    if(n.id==='employees') badge = `<span class="count">${state.employees.length}</span>`;
+    if(n.id==='leave' && pend) badge = `<span class="count">${pend}</span>`;
+    return `<button class="navitem ${route===n.id?'active':''}" onclick="go('${n.id}')">
+      ${icon(n.icon)}<span>${n.label}</span>${badge}</button>`;
+  }).join('');
+}
+function go(r){ route=r; q=''; deptFilter='all'; render(); }
+
+/* ============================ VIEWS ============================ */
+function render(){
+  renderNav();
+  const m = $('#main');
+  if(route==='dashboard') m.innerHTML = viewDashboard();
+  else if(route==='employees') m.innerHTML = viewEmployees();
+  else if(route==='leave') m.innerHTML = viewLeave();
+  else if(route==='departments') m.innerHTML = viewDepartments();
+}
+
+function viewDashboard(){
+  const emps = state.employees;
+  const active = emps.filter(e=>e.status!=='leave').length;
+  const onLeave = emps.filter(e=>e.status==='leave').length;
+  const pending = state.leave.filter(l=>l.status==='pending').length;
+  const avgSal = Math.round(emps.reduce((a,e)=>a+e.salary,0)/emps.length);
+  // recent hires
+  const recent = [...emps].sort((a,b)=>b.start.localeCompare(a.start)).slice(0,4);
+  // upcoming leave
+  const upcoming = state.leave.filter(l=>l.status!=='denied' && l.to>='2026-05-29')
+    .sort((a,b)=>a.from.localeCompare(b.from)).slice(0,4);
+  // headcount per dept
+  const maxd = Math.max(...DEPTS.map(d=>emps.filter(e=>e.dept===d.id).length),1);
+
+  return `<div class="view">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">${new Date('2026-05-29').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+        <h2 class="serif">Good morning, Selva</h2>
+        <p>Here's how your people are doing across ${DEPTS.length} departments and ${emps.length} team members today.</p>
+      </div>
+      <button class="btn" onclick="openEmpModal()">${icon('plus')} Add person</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat" style="--accent:var(--clay)">
+        <div class="lbl">Headcount</div>
+        <div class="num serif">${emps.length}</div>
+        <div class="sub"><b>${active}</b> active · ${onLeave} on leave</div>
+      </div>
+      <div class="stat" style="--accent:var(--gold)">
+        <div class="lbl">Pending requests</div>
+        <div class="num serif">${pending}</div>
+        <div class="sub">${pending? '<b class="warn">Needs your review</b>':'All caught up'}</div>
+      </div>
+      <div class="stat" style="--accent:var(--sage)">
+        <div class="lbl">Avg. compensation</div>
+        <div class="num serif">${(avgSal/1000).toFixed(0)}k</div>
+        <div class="sub">${fmtMoney(avgSal)} per year</div>
+      </div>
+      <div class="stat" style="--accent:#3d6080">
+        <div class="lbl">Remote</div>
+        <div class="num serif">${emps.filter(e=>e.status==='remote').length}</div>
+        <div class="sub">${Math.round(emps.filter(e=>e.status==='remote').length/emps.length*100)}% of the team</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:start" class="dash-cols">
+      <div>
+        <h3 class="serif" style="font-size:20px;margin-bottom:14px">Headcount by department</h3>
+        <div class="panel" style="padding:22px">
+          ${DEPTS.map(d=>{
+            const c = emps.filter(e=>e.dept===d.id).length;
+            return `<div style="margin-bottom:16px">
+              <div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px">
+                <span style="font-weight:600">${d.name}</span><span style="color:var(--ink-faint)">${c}</span>
+              </div>
+              <div style="height:8px;background:var(--paper-2);border-radius:20px;overflow:hidden">
+                <div style="height:100%;width:${c/maxd*100}%;background:${d.color};border-radius:20px;transition:width .6s ease"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div>
+        <h3 class="serif" style="font-size:20px;margin-bottom:14px">Upcoming time off</h3>
+        <div class="panel">
+          ${upcoming.length? upcoming.map(l=>{
+            const e = state.employees.find(x=>x.id===l.emp)||{name:'—'};
+            return `<div style="display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line-soft)">
+              <div class="av" style="width:36px;height:36px;border-radius:10px;background:${avColor(e.id)};color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px">${initials(e.name)}</div>
+              <div style="flex:1;min-width:0">
+                <b style="font-size:13.5px;display:block">${e.name}</b>
+                <span style="font-size:12px;color:var(--ink-faint)">${l.type} · ${fmtDate(l.from)}</span>
+              </div>
+              <span class="status ${l.status}">${l.status}</span>
+            </div>`;
+          }).join('') : `<div class="empty" style="padding:40px"><p>No upcoming leave</p></div>`}
+        </div>
+      </div>
+    </div>
+
+    <h3 class="serif" style="font-size:20px;margin:30px 0 14px">Newest team members</h3>
+    <div class="grid">
+      ${recent.map(empCard).join('')}
+    </div>
+  </div>`;
+}
+
+function empCard(e){
+  const d = dept(e.dept);
+  const sp = e.status==='active'?'<span class="pill active">Active</span>'
+    : e.status==='leave'?'<span class="pill leave">On leave</span>'
+    : '<span class="pill remote">Remote</span>';
+  return `<div class="emp" onclick="openDetail(${e.id})">
+    <div class="stat-dot">${sp}</div>
+    <div class="row1">
+      <div class="av" style="background:${avColor(e.id)}">${initials(e.name)}</div>
+      <div><h3>${e.name}</h3><div class="role">${e.role}</div></div>
+    </div>
+    <div class="meta">
+      <div><span class="dept-tag" style="color:${d.color};background:${d.color}15">${d.name}</span></div>
+      <div>${icon('mail')} ${e.email}</div>
+      <div>${icon('pin')} ${e.loc} · joined ${tenure(e.start)} ago</div>
+    </div>
+  </div>`;
+}
+
+function viewEmployees(){
+  let list = state.employees.filter(e=>{
+    const okQ = !q || (e.name+e.role+e.email+e.loc).toLowerCase().includes(q.toLowerCase());
+    const okD = deptFilter==='all' || e.dept===deptFilter;
+    return okQ && okD;
+  });
+  return `<div class="view">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Directory</div>
+        <h2 class="serif">People</h2>
+        <p>Everyone at Atrium, in one place. Click anyone to view their full profile.</p>
+      </div>
+      <button class="btn" onclick="openEmpModal()">${icon('plus')} Add person</button>
+    </div>
+    <div class="toolbar">
+      <div class="search">${icon('search')}<input placeholder="Search by name, role, location…" value="${q}" oninput="q=this.value;rerenderList()" /></div>
+      <div class="chips">
+        <button class="chip ${deptFilter==='all'?'on':''}" onclick="deptFilter='all';render()">All</button>
+        ${DEPTS.map(d=>`<button class="chip ${deptFilter===d.id?'on':''}" onclick="deptFilter='${d.id}';render()">${d.name}</button>`).join('')}
+      </div>
+    </div>
+    <div id="emplist">${list.length? `<div class="grid">${list.map(empCard).join('')}</div>`
+      : `<div class="empty">${icon('users','ic')}<p>No one matches that search.</p></div>`}</div>
+  </div>`;
+}
+function rerenderList(){
+  let list = state.employees.filter(e=>{
+    const okQ = !q || (e.name+e.role+e.email+e.loc).toLowerCase().includes(q.toLowerCase());
+    const okD = deptFilter==='all' || e.dept===deptFilter;
+    return okQ && okD;
+  });
+  $('#emplist').innerHTML = list.length? `<div class="grid">${list.map(empCard).join('')}</div>`
+    : `<div class="empty">${icon('users','ic')}<p>No one matches that search.</p></div>`;
+}
+
+function viewLeave(){
+  const rows = [...state.leave].sort((a,b)=>{
+    const order={pending:0,approved:1,denied:2};
+    return order[a.status]-order[b.status] || a.from.localeCompare(b.from);
+  });
+  return `<div class="view">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Time Off</div>
+        <h2 class="serif">Leave requests</h2>
+        <p>Review and manage vacation, sick, parental and personal leave across the team.</p>
+      </div>
+      <button class="btn" onclick="openLeaveModal()">${icon('plus')} New request</button>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody>
+          ${rows.map(l=>{
+            const e = state.employees.find(x=>x.id===l.emp)||{name:'—',id:0};
+            const c = LEAVE_COLORS[l.type]||'#999';
+            return `<tr>
+              <td><div class="td-person"><div class="av" style="background:${avColor(e.id)}">${initials(e.name)}</div><div><b>${e.name}</b><span>${dept(e.dept).name}</span></div></div></td>
+              <td><span class="lt"><span class="d" style="background:${c}"></span>${l.type}</span></td>
+              <td>${fmtDate(l.from)} – ${fmtDate(l.to)}</td>
+              <td><b>${l.days}</b></td>
+              <td><span class="status ${l.status}">${l.status}</span></td>
+              <td><div class="actions-cell" style="justify-content:flex-end">
+                ${l.status!=='approved'?`<button class="iconbtn ok" title="Approve" onclick="setLeave(${l.id},'approved')">${icon('check')}</button>`:''}
+                ${l.status!=='denied'?`<button class="iconbtn no" title="Deny" onclick="setLeave(${l.id},'denied')">${icon('x')}</button>`:''}
+                <button class="iconbtn" title="Delete" onclick="delLeave(${l.id})">${icon('trash')}</button>
+              </div></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function viewDepartments(){
+  return `<div class="view">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Structure</div>
+        <h2 class="serif">Departments</h2>
+        <p>Five teams building Atrium. Headcount and average tenure update live.</p>
+      </div>
+    </div>
+    <div class="dept-grid">
+      ${DEPTS.map(d=>{
+        const team = state.employees.filter(e=>e.dept===d.id);
+        const avgT = team.length? Math.round(team.reduce((a,e)=>{
+          const dd=new Date(e.start+'T00:00:00'),n=new Date('2026-05-29');
+          return a+((n-dd)/(1000*60*60*24*365));
+        },0)/team.length*10)/10 : 0;
+        return `<div class="deptcard">
+          <div class="bar" style="background:${d.color}"></div>
+          <h3>${d.name}</h3>
+          <div class="lead">Led by ${d.lead}</div>
+          <div class="nums">
+            <div><span>People</span><b>${team.length}</b></div>
+            <div><span>Avg tenure</span><b>${avgT}y</b></div>
+          </div>
+          <div class="avstack">
+            ${team.slice(0,5).map(e=>`<div class="av" style="background:${avColor(e.id)}" title="${e.name}">${initials(e.name)}</div>`).join('')}
+            ${team.length>5?`<div class="more">+${team.length-5}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================ MODALS ============================ */
+function openModal(html){
+  $('#modal').innerHTML = html;
+  $('#scrim').classList.add('open');
+}
+function closeModal(){ $('#scrim').classList.remove('open'); }
+$('#scrim').addEventListener('click', e=>{ if(e.target.id==='scrim') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+function openEmpModal(id){
+  const e = id? state.employees.find(x=>x.id===id) : null;
+  openModal(`
+    <div class="modal-head">
+      <div><h3>${e?'Edit person':'Add a person'}</h3><p>${e?'Update details for '+e.name:'Bring a new team member into Atrium.'}</p></div>
+      <button class="x" onclick="closeModal()">${icon('x')}</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Full name</label><input id="f_name" value="${e?e.name:''}" placeholder="Jordan Rivera" /></div>
+      <div class="field-row">
+        <div class="field"><label>Role</label><input id="f_role" value="${e?e.role:''}" placeholder="Software Engineer" /></div>
+        <div class="field"><label>Department</label><select id="f_dept">${DEPTS.map(d=>`<option value="${d.id}" ${e&&e.dept===d.id?'selected':''}>${d.name}</option>`).join('')}</select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Email</label><input id="f_email" value="${e?e.email:''}" placeholder="name@atrium.co" /></div>
+        <div class="field"><label>Phone</label><input id="f_phone" value="${e?e.phone:''}" placeholder="+1 555 000 0000" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Location</label><input id="f_loc" value="${e?e.loc:''}" placeholder="San Francisco" /></div>
+        <div class="field"><label>Start date</label><input id="f_start" type="date" value="${e?e.start:'2026-05-29'}" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Salary (USD)</label><input id="f_salary" type="number" value="${e?e.salary:''}" placeholder="120000" /></div>
+        <div class="field"><label>Status</label><select id="f_status">
+          <option value="active" ${e&&e.status==='active'?'selected':''}>Active (on-site)</option>
+          <option value="remote" ${e&&e.status==='remote'?'selected':''}>Remote</option>
+          <option value="leave" ${e&&e.status==='leave'?'selected':''}>On leave</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      ${e?`<button class="btn danger" style="margin-right:auto" onclick="delEmp(${e.id})">${icon('trash')} Remove</button>`:''}
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="saveEmp(${e?e.id:0})">${e?'Save changes':'Add person'}</button>
+    </div>`);
+  setTimeout(()=>$('#f_name')&&$('#f_name').focus(),60);
+}
+
+function saveEmp(id){
+  const g = i=>$('#f_'+i).value.trim();
+  const name=g('name'), role=g('role');
+  if(!name){ toast('Please enter a name'); $('#f_name').focus(); return; }
+  const data = {name, role:role||'—', dept:g('dept'), email:g('email'), phone:g('phone'),
+    loc:g('loc')||'—', start:g('start'), salary:parseInt(g('salary'))||0, status:g('status'),
+    type:'Full-time'};
+  if(id){
+    const e = state.employees.find(x=>x.id===id);
+    Object.assign(e, data);
+    toast(name+' updated');
+  }else{
+    state.employees.push({id:state.nextEmp++, ...data});
+    toast(name+' added to the team');
+  }
+  save(); closeModal(); render();
+}
+function delEmp(id){
+  const e = state.employees.find(x=>x.id===id);
+  state.employees = state.employees.filter(x=>x.id!==id);
+  state.leave = state.leave.filter(l=>l.emp!==id);
+  save(); closeModal(); render();
+  toast((e?e.name:'Person')+' removed');
+}
+
+function openDetail(id){
+  const e = state.employees.find(x=>x.id===id); if(!e) return;
+  const d = dept(e.dept);
+  const myLeave = state.leave.filter(l=>l.emp===id);
+  openModal(`
+    <div class="modal-head">
+      <div class="det-head">
+        <div class="av" style="background:${avColor(e.id)};color:#fff;display:grid;place-items:center;font-weight:700;font-family:'Fraunces',serif">${initials(e.name)}</div>
+        <div><h3>${e.name}</h3><p>${e.role} · ${d.name}</p></div>
+      </div>
+      <button class="x" onclick="closeModal()">${icon('x')}</button>
+    </div>
+    <div class="modal-body">
+      <div class="drawer-list">
+        <div class="li"><span>Email</span><b>${e.email}</b></div>
+        <div class="li"><span>Phone</span><b>${e.phone}</b></div>
+        <div class="li"><span>Location</span><b>${e.loc}</b></div>
+        <div class="li"><span>Employment</span><b>${e.type}</b></div>
+        <div class="li"><span>Start date</span><b>${fmtDate(e.start)} (${tenure(e.start)})</b></div>
+        <div class="li"><span>Compensation</span><b>${fmtMoney(e.salary)}/yr</b></div>
+        <div class="li"><span>Status</span><b style="text-transform:capitalize">${e.status}</b></div>
+        <div class="li"><span>Leave history</span><b>${myLeave.length} request${myLeave.length!==1?'s':''}</b></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+      <button class="btn" onclick="openEmpModal(${e.id})">${icon('edit')} Edit profile</button>
+    </div>`);
+}
+
+function openLeaveModal(){
+  openModal(`
+    <div class="modal-head">
+      <div><h3>New leave request</h3><p>Log time off on behalf of a team member.</p></div>
+      <button class="x" onclick="closeModal()">${icon('x')}</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Employee</label><select id="l_emp">${state.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}</select></div>
+      <div class="field"><label>Type</label><select id="l_type"><option>Vacation</option><option>Sick</option><option>Parental</option><option>Personal</option></select></div>
+      <div class="field-row">
+        <div class="field"><label>From</label><input id="l_from" type="date" value="2026-06-01" /></div>
+        <div class="field"><label>To</label><input id="l_to" type="date" value="2026-06-05" /></div>
+      </div>
+      <div class="field"><label>Note</label><textarea id="l_note" placeholder="Reason or context…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="saveLeave()">Submit request</button>
+    </div>`);
+}
+function saveLeave(){
+  const from=$('#l_from').value, to=$('#l_to').value;
+  if(!from||!to||to<from){ toast('Please pick a valid date range'); return; }
+  const days = Math.round((new Date(to)-new Date(from))/(1000*60*60*24))+1;
+  state.leave.push({id:state.nextLeave++, emp:parseInt($('#l_emp').value), type:$('#l_type').value,
+    from, to, days, status:'pending', note:$('#l_note').value.trim()});
+  save(); closeModal(); render();
+  toast('Leave request submitted');
+}
+function setLeave(id,status){
+  const l = state.leave.find(x=>x.id===id); if(l){ l.status=status; save(); render();
+    toast('Request '+status); }
+}
+function delLeave(id){ state.leave = state.leave.filter(x=>x.id!==id); save(); render(); toast('Request deleted'); }
+
+/* ============================ BOOT ============================ */
+render();
+</script>
+</body>
+</html>
